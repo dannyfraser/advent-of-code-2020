@@ -29,7 +29,7 @@ def solve_2(inputs):
         "byr": lambda x: 1920 <= int(x) <= 2002,
         "iyr": lambda x: 2010 <= int(x) <= 2020, 
         "eyr": lambda x: 2020 <= int(x) <= 2030, 
-        "hgt": lambda x: re.match(r"^\d+(cm|in)$", x) and (150 <= int(x[:-2]) <= 193 if x.endswith("cm") else 59 <= int(x[:-2]) <= 76) is not None, 
+        "hgt": lambda x: re.match(r"^\d+(cm|in)$", x) is not None and ((150 <= int(x[:-2]) <= 193) if x.endswith("cm") else (59 <= int(x[:-2]) <= 76)), 
         "hcl": lambda x: re.match(r"^#(?:[0-9a-f]{3}){1,2}$", x) is not None, 
         "ecl": lambda x: x in ("amb", "blu", "brn", "gry", "grn", "hzl", "oth"), 
         "pid": lambda x: re.match(r"^\d{9}$", x) is not None,
