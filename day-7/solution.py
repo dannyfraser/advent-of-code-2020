@@ -31,35 +31,31 @@ def parse_inputs(inputs):
 
 def build_graph(contents):
     G = nx.DiGraph(contents)
-    return G.reverse() # directions need to point towards outer bags
+    return G
 
 def find_outer_bags(graph, root):
-    outer_bags = []
-    for node in graph:
-        if graph.out_degree(node)==0 and nx.has_path(graph, root, node): #it's a leaf, so one of the outer bags
-            for p in nx.shortest_simple_paths(graph, root, node):
-                for n in p[1:]:
-                    outer_bags.append(n)
-    return set(outer_bags)
+    rev_graph = graph.reverse()
+    predecessors = nx.dfs_predecessors(rev_graph, root)
+    return len(predecessors)
 
 def count_total_bags(graph, root):
-    bags = 0
-    for node in graph:
-        if graph.out_degree(node)==0 and nx.has_path(graph, root, node): #it's a leaf, so one of the outer bags
-            for p in nx.shortest_simple_paths(graph, root, node):
-                print(p)
-                if len(p) > 1:
-                    print(graph[p[0]][p[1]]['weight'])
-                    #bags += sum([graph[p[i]][p[i+1]]['weight'] for i in range(len(p)-1)])
-    return bags
+    # recursive search of neighbours from root node
+    def search(node):
+        count = 1
+        for n in graph.neighbors(node):
+            count += graph[node][n]["weight"] * search(n)
+        return count
+    return search(root) - 1
     
 graph = build_graph(parse_inputs(inputs))
 test_graph = build_graph(parse_inputs(test_inputs))
 print(find_outer_bags(test_graph, "shiny gold"))
-assert len(find_outer_bags(test_graph, "shiny gold")) == 4
+assert find_outer_bags(test_graph, "shiny gold") == 4
 
-print(len(find_outer_bags(graph, "shiny gold")))
+print(find_outer_bags(graph, "shiny gold"))
 
 test_graph_2 = build_graph(parse_inputs(test_inputs_2))
 print(count_total_bags(test_graph_2, "shiny gold"))
 assert count_total_bags(test_graph_2, "shiny gold") == 126
+
+print(count_total_bags(graph, "shiny gold"))
